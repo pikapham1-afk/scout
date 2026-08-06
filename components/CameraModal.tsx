@@ -103,6 +103,8 @@ export default function CameraModal({
 
         });
 
+      
+
       setStream(media);
 
       if (videoRef.current) {
@@ -660,7 +662,13 @@ const report = {
   <img
     src={preview}
     alt=""
-    className="w-full rounded-xl"
+    className="
+w-full
+max-h-[42vh]
+object-cover
+rounded-xl
+shadow
+"
   />
 
   <div
