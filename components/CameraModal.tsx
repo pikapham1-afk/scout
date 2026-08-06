@@ -51,9 +51,27 @@ export default function CameraModal({
 
     useState("");
 
+    const WEATHER_OPTIONS = [
+  "☀️ Nắng",
+  "☁️ Nhiều mây",
+  "🌧 Mưa",
+  "⛈ Giông",
+  "🌫 Sương mù",
+  "💨 Gió mạnh",
+  "🌊 Ngập",
+  "🚗 Kẹt xe",
+  "🌳 Cây đổ",
+  "⚠️ Đường trơn",
+  "🔥 Nắng nóng",
+  "❄️ Lạnh",
+];
+
   const [conditions, setConditions] =
 
     useState<string[]>([]);
+
+    const [selectedConditions, setSelectedConditions] =
+  useState<string[]>([]);
 
   const [confidence, setConfidence] =
 
@@ -162,6 +180,8 @@ export default function CameraModal({
     setCaption("");
 
     setConditions([]);
+
+     setSelectedConditions([]);
 
     setConfidence(0);
 
@@ -319,32 +339,28 @@ export default function CameraModal({
 
       }
 
-      setConditions(
+     const aiConditions =
 
-        Array.isArray(
+  Array.isArray(data.conditions)
 
-          data.conditions
+    ? data.conditions
 
-        )
+    : [];
 
-          ? data.conditions
+setConditions(aiConditions);
 
-          : []
+// 🤖 AI tự tick sẵn
+setSelectedConditions(aiConditions);
 
-      );
+setConfidence(
 
-      setConfidence(
+  typeof data.confidence === "number"
 
-        typeof data.confidence ===
+    ? data.confidence
 
-          "number"
+    : 0
 
-          ? data.confidence
-
-          : 0
-
-      );
-
+);
       setStep("confirm");
 
     } catch (error) {
@@ -382,15 +398,13 @@ export default function CameraModal({
 const report = {
   image: preview,
   caption,
-  conditions,
+ conditions: selectedConditions,
   confidence,
   latitude,
   longitude,
   createdAt: now,
   expiresAt: now + 60 * 60 * 1000, // Hết hạn sau 1 giờ
 };
-
-await addReport(report);
 
       console.log("📤 Report:", report);
 
@@ -431,7 +445,7 @@ await addReport(report);
 
   caption,
 
-  conditions,
+  conditions: selectedConditions,
 
   confidence,
 
@@ -633,21 +647,62 @@ await addReport(report);
 
         {step === "confirm" && (
 
-          <>
+  <div
+    style={{
+      opacity: 1,
+      filter: "none",
+      color: "#000",
+    }}
+  >
 
-            <img
+           <div className="relative">
 
-              src={preview}
+  <img
+    src={preview}
+    alt=""
+    className="w-full rounded-xl"
+  />
 
-              alt="Preview"
+  <div
+    className="
+      absolute
+      bottom-0
+      left-0
+      right-0
+      rounded-b-xl
+      bg-gradient-to-t
+      from-black/70
+      to-transparent
+      p-4
+    "
+  >
 
-              className="
-              w-full
-              rounded-xl
-              shadow
-              "
+    <textarea
 
-            />
+      value={caption}
+
+      onChange={(e)=>
+        setCaption(e.target.value)
+      }
+
+      placeholder="Thêm mô tả..."
+
+      rows={2}
+
+      className="
+        w-full
+        resize-none
+        bg-transparent
+        text-white
+        placeholder:text-gray-300
+        outline-none
+      "
+
+    />
+
+  </div>
+
+</div>
 
             <h2
               className="
@@ -695,127 +750,141 @@ await addReport(report);
             </div>
 
             <div
-              className="
-              mt-4
-              rounded-lg
-              bg-blue-50
-              p-3
-              "
-            >
-
-              ⭐ Độ tin cậy
-
-              <b>
-
-                {" "}
-
-                {confidence}%
-
-              </b>
-
-            </div>
-
-            <div
   className="
   mt-4
+  rounded-lg
+  bg-blue-50
+  p-3
   "
 >
 
-  <p
-    className="
-    mb-2
-    font-semibold
-    "
-  >
-    📝 Mô tả hiện trường
-  </p>
-
-  <textarea
-
-    value={caption}
-
-    onChange={(e) =>
-      setCaption(e.target.value)
-    }
-
-    rows={3}
-
-    placeholder="Ví dụ: Mưa lớn, đường ngập khoảng 20cm..."
-
-    className="
-    w-full
-    rounded-xl
-    border
-    border-gray-300
-    p-3
-    outline-none
-    focus:border-green-500
-    "
-
-  />
+  ⭐ Độ tin cậy <b>{confidence}%</b>
 
 </div>
 
-            <button
+<div className="mt-4">
 
-              onClick={retake}
+  <p className="mb-2 font-semibold">
+    🌤 Chỉnh sửa nếu AI sai
+  </p>
 
-              className="
-              mt-4
-              w-full
-              rounded-xl
-              bg-yellow-500
-              py-3
-              text-white
-              hover:bg-yellow-600
-              "
+  <div
+    className="
+    flex
+    gap-2
+    overflow-x-auto
+    pb-2
+    "
+  >
 
-            >
+    {WEATHER_OPTIONS.map((item) => {
 
-              🔄 Chụp lại
+      const active =
+        selectedConditions.includes(item);
 
-            </button>
+      return (
 
-            <button
+        <button
+          key={item}
+          onClick={() => {
 
-              onClick={upload}
+            if (active) {
 
-              className="
-              mt-3
-              w-full
-              rounded-xl
-              bg-green-600
-              py-3
-              text-white
-              hover:bg-green-700
-              "
+              setSelectedConditions(
+                selectedConditions.filter(
+                  (x) => x !== item
+                )
+              );
 
-            >
+            } else {
 
-              🚀 Đăng lên bản đồ
+              setSelectedConditions([
+                ...selectedConditions,
+                item,
+              ]);
 
-            </button>
+            }
 
-            <button
+          }}
+          className={`whitespace-nowrap rounded-full px-3 py-2 border transition ${
+            active
+              ? "bg-blue-600 text-white border-blue-600"
+              : "bg-white border-gray-300"
+          }`}
+        >
+          {item}
+        </button>
 
-              onClick={save}
+      );
 
-              className="
-              mt-3
-              w-full
-              rounded-xl
-              bg-gray-200
-              py-3
-              hover:bg-gray-300
-              "
+    })}
 
-            >
+  </div>
 
-              📁 Lưu cá nhân
+</div>
 
-            </button>
+<button
 
-          </>
+  onClick={retake}
+
+  className="
+  mt-4
+  w-full
+  rounded-xl
+  bg-yellow-500
+  py-3
+  text-white
+  hover:bg-yellow-600
+  "
+
+>
+
+  🔄 Chụp lại
+
+</button>
+
+<div className="mt-3 grid grid-cols-2 gap-3">
+
+  <button
+
+    onClick={save}
+
+    className="
+    rounded-xl
+    bg-gray-200
+    py-3
+    font-semibold
+    hover:bg-gray-300
+    "
+
+  >
+
+    📁 Lưu
+
+  </button>
+
+  <button
+
+    onClick={upload}
+
+    className="
+    rounded-xl
+    bg-green-600
+    py-3
+    font-semibold
+    text-white
+    hover:bg-green-700
+    "
+
+  >
+
+    🚀 Đăng
+
+  </button>
+
+</div>
+
+          </div>
 
         )}
 
