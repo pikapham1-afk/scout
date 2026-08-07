@@ -343,9 +343,25 @@ setSearchKeyword(keyword);
     "
   >
 
-    <h2 className="text-lg font-bold">
-      📊 Báo cáo khu vực
-    </h2>
+<div className="flex items-center justify-between">
+
+  <h2 className="text-xl font-extrabold tracking-tight">
+    📊 Báo cáo khu vực
+  </h2>
+
+  <button
+    onClick={() => {
+      setAreaReports([]);
+      setSearchMarker(null);
+      setSearchKeyword("");
+    }}
+    className="rounded-lg bg-red-500 px-3 py-1 text-white hover:bg-red-600"
+  >
+    ✕
+  </button>
+
+</div>
+    
 
     <p className="mt-1 text-sm text-gray-500">
       {searchKeyword}
@@ -840,7 +856,7 @@ setSearchKeyword(keyword);
     bottom-6
     left-6
     z-[999]
-    w-[340px]
+    w-[280px]
     rounded-2xl
     bg-white
     p-4
@@ -899,7 +915,7 @@ setSearchKeyword(keyword);
 </div>
 <div className="mt-5">
 
-  <h3 className="mb-3 text-base font-bold">
+  <h3 className="mb-3 text-lg font-extrabold">
     📷 Ảnh cộng đồng
   </h3>
 
