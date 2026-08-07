@@ -420,6 +420,7 @@ setSearchKeyword(keyword);
       justify-center
       bg-black/70
     "
+     onClick={() => setSelectedReport(null)}
   >
 
     <div
@@ -429,6 +430,7 @@ setSearchKeyword(keyword);
         bg-white
         p-4
       "
+      onClick={(e) => e.stopPropagation()}
     >
       <button
   onClick={() => setSelectedReport(null)}
