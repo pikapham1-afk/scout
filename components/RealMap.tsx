@@ -640,10 +640,10 @@ setSearchKeyword(keyword);
       }}
     >
 
-      <TileLayer
-        attribution="&copy; OpenStreetMap"
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+     <TileLayer
+  attribution="&copy; OpenStreetMap contributors"
+  url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+/>
 
       <LocateMe
   latitude={
